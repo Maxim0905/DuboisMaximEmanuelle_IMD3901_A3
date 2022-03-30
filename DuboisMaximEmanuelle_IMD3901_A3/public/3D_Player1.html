@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tic Tac Toe</title>
+        <meta charset="utf-8" />
+        <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+        <script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+        <script src="https://unpkg.com/super-hands@^2.1.0/dist/super-hands.min.js"></script>
+
+        <link rel="stylesheet" href="user-gesture.css">
+
+        <script>
+            AFRAME.registerComponent('start-experience', {
+                init : function() {
+                      console.log('scene loaded');
+                      document.querySelector('#user-gesture-button').style.display = 'block';
+                }
+            });
+
+        </script>
+    </head>
+
+    <body>
+        
+        <!--START button-->
+        <div id="user-gesture-overlay">
+            <div class="center">
+                <button id="user-gesture-button">START</button>
+            </div>
+        </div>
+
+        <!--3D scene starts-->
+        <a-scene start-experience background="color:rgb(173, 216, 230);">
+
+
+            <a-entity camera wasd-controls look-controls position="0 1.6 0">
+                <a-entity cursor="rayOrigin:mouse;" raycaster="far:20; interval:200; objects:.interactive"></a-entity>
+            </a-entity>
+
+            <a-entity class="ground" geometry="primitive:plane; width:14; height:14;" material="color:grey;" position="0 0.01 -4" rotation="-90 0 0"></a-entity>
+
+            <!--tic tac toe boxes-->
+            <a-box id="box_top_left" class="box interactive" position="-1.3 4.1 -5" height="0.9" width="0.9" depth="0.9" color="black" shadow></a-box>
+            <a-box id="box_top_middle" class="box interactive" position="0 4.1 -5" height="0.9" width="0.9" depth="0.9" color="black" shadow></a-box>
+            <a-box id="box_top_right"class="box interactive" position="1.3 4.1 -5" height="0.9" width="0.9" depth="0.9" color="black" shadow></a-box>
+            <a-box id="box_center_left" class="box interactive" position="-1.3 2.8 -5" height="0.9" width="0.9" depth="0.9" color="black" shadow></a-box>
+            <a-box id="box_center_middle" class="box interactive" position="0 2.8 -5" height="0.9" width="0.9" depth="0.9" color="black" shadow></a-box>
+            <a-box id="box_center_right" class="box interactive" position="1.3 2.8 -5" height="0.9" width="0.9" depth="0.9" color="black" shadow></a-box>
+            <a-box id="box_bottom_left" class="box interactive" position="-1.3 1.5 -5" height="0.9" width="0.9" depth="0.9" color="black" shadow></a-box>
+            <a-box id="box_bottom_middle" class="box interactive" position="0 1.5 -5" height="0.9" width="0.9" depth="0.9" color="black" shadow></a-box>
+            <a-box id="box_bottom_right" class="box interactive" position="1.3 1.5 -5" height="0.9" width="0.9" depth="0.9" color="black"  shadow></a-box>   
+
+        <!-- this is magic code created when the node server runs -->
+        <!-- putting at th bottom of body to let body load first before we try to query for elements -->
+        <script src="/socket.io/socket.io.js"></script>
+
+        <script>
+            const socket = io();
+
+            // tracks number of times start button has been pressed
+            var buttonTracker = 0;
+
+            socket.on('connect', (userData) => {
+                console.log('I exist!');
+
+                 // START Button
+                 document.querySelector('#user-gesture-button').addEventListener('click', function(){
+                    socket.emit('startButton');
+                });
+
+                // start button overlay
+                socket.on('startGame', (data)=>{
+                    // tracks number of times button is pressed
+                    buttonTracker++;
+                    console.log("player "+ socket.id + " startGame " + buttonTracker);
+
+                    // If user1s ID is the same as the one that PRESSED the btn
+                    if(socket.id == data.id){
+                    // remove button option
+                    document.querySelector('#user-gesture-button').style.display = 'none';
+                    }
+
+                    // If BOTH players pressed the button
+                    if(buttonTracker == 2){
+                        document.querySelector('#user-gesture-overlay').style.display = 'none';
+                    }
+                });
+
+
+                 //top left box 1           
+                 document.querySelector('#box_top_left').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('green1', {r:50, g:205, b:50});
+                });
+                socket.on('color_change1', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    document.querySelector('#box_top_left').setAttribute('material', {color:colorStr});
+                    console.log('color_change: ' + colorStr);
+                    
+                });
+
+                //top middle box 2           
+                document.querySelector('#box_top_middle').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('green2', {r:50, g:205, b:50});
+                });
+                socket.on('color_change2', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_top_middle').setAttribute('material', {color:colorStr});
+                });
+
+                //top right box 3           
+                document.querySelector('#box_top_right').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('green3', {r:50, g:205, b:50});
+                });
+                socket.on('color_change3', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_top_right').setAttribute('material', {color:colorStr});
+                });
+
+                //center left box 4           
+                document.querySelector('#box_center_left').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('green4', {r:50, g:205, b:50});
+                });
+                socket.on('color_change4', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_center_left').setAttribute('material', {color:colorStr});
+                });
+
+                //center middle box 5          
+                document.querySelector('#box_center_middle').addEventListener('click', function(){
+                    console.log('box clicked'); 
+                    socket.emit('green5', {r:50, g:205, b:50});
+                });
+                socket.on('color_change5', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_center_middle').setAttribute('material', {color:colorStr});
+                });
+
+                //center right box 6           
+                document.querySelector('#box_center_right').addEventListener('click', function(){        
+                    console.log('box clicked');
+                    socket.emit('green6', {r:50, g:205, b:50});
+                });
+                socket.on('color_change6', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_center_right').setAttribute('material', {color:colorStr});
+                });
+
+                //bottom left box 7
+                document.querySelector('#box_bottom_left').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('green7', {r:50, g:205, b:50});
+                });
+                socket.on('color_change7', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_bottom_left').setAttribute('material', {color:colorStr});
+                });
+
+                //bottom middle box 8
+                document.querySelector('#box_bottom_middle').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('green8', {r:50, g:205, b:50});
+                });
+                socket.on('color_change8', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_bottom_middle').setAttribute('material', {color:colorStr});
+                });
+
+                //bottom right box 9
+                document.querySelector('#box_bottom_right').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('green9', {r:50, g:205, b:50});
+                });
+                socket.on('color_change9', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_bottom_right').setAttribute('material', {color:colorStr});
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tic Tac Toe</title>
+        <meta charset="utf-8" />
+
+        <style>
+            .grid {
+                display: table;
+                border-spacing: 5px
+            }
+            .row {
+                display: table-row
+            }
+            .cell {
+                width: 70px;
+                height: 70px;
+                background: black;
+                display: table-cell;
+            }
+        </style>
+
+        <link rel="stylesheet" href="user-gesture.css">
+
+    </head>
+
+    <body>
+
+        <div class="grid">
+            <div class="row">
+              <div class="cell" id="box_top_left"></div>
+              <div class="cell" id="box_top_middle"></div>
+              <div class="cell" id="box_top_right"></div>
+            </div>
+            <div class="row">
+              <div class="cell" id="box_center_left"></div>
+              <div class="cell" id="box_center_middle"></div>
+              <div class="cell" id="box_center_right"></div>
+            </div>
+            <div class="row">
+              <div class="cell" id="box_bottom_left"></div>
+              <div class="cell" id="box_bottom_middle"></div>
+              <div class="cell" id="box_bottom_right"></div>
+            </div>
+        </div>
+
+        <!-- this is magic code created when the node server runs -->
+        <script src="/socket.io/socket.io.js"></script>
+          
+          <script>
+              let socket = io();
+
+              socket.on('connect', (userData) => {
+                console.log('I exist!');
+
+                //variable for button tracking
+                var trackButton = 0;
+
+                //START Button
+                document.querySelector('#user-gesture-button-2D').addEventListener('click', function(){
+                        socket.emit('startButton');
+                    });
+
+                    socket.on('startGame', (data)=>{
+                        //tracks number of times button is pressed
+                        trackButton++;
+                        console.log("player "+ socket.id + " startGame " + trackButton);
+
+                        //if player1s ID is equal to one that PRESSED the btn
+                        if(socket.id == data.id){
+                        // remove button option
+                        document.querySelector('#user-gesture-button-2D').style.display = 'none';
+                        }
+
+                        //if both players pressed button remove overlay and let the game start
+                        if(trackButton == 2){
+                            document.querySelector('#user-gesture-overlay-2D').style.display = 'none';
+                        }
+                    });
+              
+                //put code here to check if socket works - box turns yellow
+                //top left box 1           
+                document.querySelector('#box_top_left').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('yellow1', {r:250, g:253, b:15});
+                });
+                socket.on('color_change1', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    document.querySelector('#box_top_left').style.background = colorStr;
+                    console.log('color_change: ' + colorStr);
+                    
+                });
+
+                //top middle box 2           
+                document.querySelector('#box_top_middle').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('yellow2', {r:250, g:253, b:15});
+                });
+                socket.on('color_change2', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_top_middle').style.background = colorStr;
+                });
+
+                //top right box 3           
+                document.querySelector('#box_top_right').addEventListener('click', function(){
+                    console.log('box clicked'); 
+                    socket.emit('yellow3', {r:250, g:253, b:15});
+                });
+                socket.on('color_change3', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_top_right').style.background = colorStr;
+                });
+
+                //center left box 4           
+                document.querySelector('#box_center_left').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('yellow4', {r:250, g:253, b:15});
+                });
+                socket.on('color_change4', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_center_left').style.background = colorStr;
+                });
+
+                //center middle box 5          
+                document.querySelector('#box_center_middle').addEventListener('click', function(){
+                    console.log('box clicked'); 
+                    socket.emit('yellow5', {r:250, g:253, b:15});
+                });
+                socket.on('color_change5', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_center_middle').style.background = colorStr;
+                });
+
+                //center right box 6           
+                document.querySelector('#box_center_right').addEventListener('click', function(){        
+                    console.log('box clicked');
+                    socket.emit('yellow6', {r:250, g:253, b:15});
+                });
+                socket.on('color_change6', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_center_right').style.background = colorStr;
+                });
+
+                //bottom left box 7
+                document.querySelector('#box_bottom_left').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('yellow7', {r:250, g:253, b:15});
+                });
+                socket.on('color_change7', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_bottom_left').style.background = colorStr;
+                });
+
+                //bottom middle box 8
+                document.querySelector('#box_bottom_middle').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('yellow8', {r:250, g:253, b:15});
+                });
+                socket.on('color_change8', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_bottom_middle').style.background = colorStr;
+                });
+
+                //bottom right box 9
+                document.querySelector('#box_bottom_right').addEventListener('click', function(){
+                    console.log('box clicked');
+                    socket.emit('yellow9', {r:250, g:253, b:15});
+                });
+                socket.on('color_change9', (data)=>{
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change: ' + colorStr);
+                    document.querySelector('#box_bottom_right').style.background = colorStr;
+                });
+
+            });
+          </script>
+
+          <!--START Button-->
+          <div id="user-gesture-overlay-2D">
+            <div class="center">
+                <button id="user-gesture-button-2D">START</button>
+            </div>
+        </div>
+
+    </body>
